@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Romantic Kiss Animation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Parisienne&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f8cdda 0%, #d6dfff 100%); /* Rosier pink to softer blue */
+            margin: 0;
+            overflow: hidden;
+            color: #4a5568;
+        }
+
+        .animation-container {
+            position: relative;
+            width: 550px;
+            height: 400px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            border: 2px solid #e2e8f0;
+            border-radius: 20px;
+            background-color: rgba(255, 255, 255, 0.9); /* Slightly more opaque */
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12), 0 8px 15px rgba(0,0,0,0.07);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .animation-container::before,
+        .animation-container::after {
+            content: '🌸'; /* Cherry blossom for romance */
+            position: absolute;
+            font-size: 80px;
+            opacity: 0;
+            animation: faintElements 18s infinite ease-in-out;
+            z-index: 0;
+        }
+
+        .animation-container::before {
+            top: 15%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .animation-container::after {
+            bottom: 15%;
+            right: 12%;
+            font-size: 70px;
+            animation-delay: 9s;
+        }
+
+        @keyframes faintElements { /* Renamed for clarity */
+            0%, 100% { opacity: 0; transform: scale(0.7) rotate(-15deg); }
+            25% { opacity: 0.1; transform: scale(1) rotate(8deg); }
+            75% { opacity: 0.07; transform: scale(0.85) rotate(-5deg); }
+        }
+
+        .person {
+            position: absolute;
+            bottom: 25px;
+            width: 70px;
+            height: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 2;
+        }
+
+        .person .head {
+            width: 40px;
+            height: 40px;
+            background-color: #ffebcd;
+            border-radius: 50%;
+            border: 2px solid #e0c1ac;
+            margin-bottom: -5px;
+            z-index: 2;
+            position: relative;
+            transform-origin: bottom center; /* For a more natural tilt */
+            transition: transform 0.8s ease-in-out;
+        }
+
+        .person .torso {
+            width: 60px;
+            height: 90px;
+            background-color: #c1d8e0; /* Softer blue for person1 */
+            border-radius: 15px 15px 5px 5px;
+            border: 2px solid #a3b6bf; /* Muted border */
+            position: relative;
+            z-index: 1;
+        }
+        
+        #person2 .torso {
+            background-color: #fadadd; /* Very soft pink for person2 */
+            border-color: #e8c0c6; /* Muted pink border */
+        }
+
+        .person .arm {
+            width: 20px;
+            height: 70px;
+            border-radius: 10px;
+            position: absolute;
+            top: 45px;
+            transform-origin: 10px 10px;
+            z-index: 0;
+        }
+        
+        #person1 .arm { background-color: #c1d8e0; border: 2px solid #a3b6bf; }
+        #person1 .arm-front { left: 5px; transform: rotate(20deg); z-index: 3; }
+        #person1 .arm-back { left: 45px; transform: rotate(-15deg); }
+
+        #person2 .arm { background-color: #fadadd; border: 2px solid #e8c0c6; }
+        #person2 .arm-front { left: 5px; transform: rotate(15deg); z-index: 3; }
+        #person2 .arm-back { left: 45px; transform: rotate(-20deg); }
+
+        #person1 { left: 70px; }
+        #person2 { right: 70px; }
+
+        .heart {
+            position: absolute;
+            bottom: 150px;
+            left: 50%;
+            transform: translateX(-50%) scale(0);
+            font-size: 65px;
+            color: #ff6b81; /* Romantic pink-red */
+            opacity: 0;
+            filter: drop-shadow(0 0 10px #ff6b81);
+            transition: opacity 0.7s ease-in-out 0.3s, transform 0.7s cubic-bezier(0.68, -0.55, 0.27, 1.55) 0.3s;
+            z-index: 5;
+        }
+        
+        .kiss-symbol {
+            position: absolute;
+            bottom: 175px; /* Position near where heads meet */
+            left: 50%;
+            transform: translateX(-50%) translateY(10px) scale(0); /* Start slightly lower and small */
+            font-size: 30px;
+            color: #e74c3c; /* Kiss mark color */
+            opacity: 0;
+            z-index: 6; /* Above heart and people */
+            transition: opacity 0.3s ease-in-out, transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+        .kiss-symbol.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0px) scale(1.2);
+        }
+
+
+        /* Animation classes */
+        .move-person1 { animation: movePerson1 2.5s cubic-bezier(0.65, 0, 0.35, 1) forwards; }
+        .move-person2 { animation: movePerson2 2.5s cubic-bezier(0.65, 0, 0.35, 1) forwards; }
+
+        .hug-person1-arm-front { animation: hugPerson1ArmFront 1.2s ease-in-out forwards 0.2s; }
+        .hug-person1-arm-back { animation: hugPerson1ArmBack 1.2s ease-in-out forwards 0.2s; }
+        .hug-person2-arm-front { animation: hugPerson2ArmFront 1.2s ease-in-out forwards 0.2s; }
+        .hug-person2-arm-back { animation: hugPerson2ArmBack 1.2s ease-in-out forwards 0.2s; }
+        
+        /* Head tilt for hug */
+        .tilt-head1-hug { transform: rotate(8deg) translateY(-2px); } 
+        .tilt-head2-hug { transform: rotate(-8deg) translateY(-2px); }
+
+        /* Head movement for kiss */
+        .kiss-head1 { transform: rotate(15deg) translateX(5px) translateY(-3px) !important; } /* More tilt, slight move */
+        .kiss-head2 { transform: rotate(-15deg) translateX(-5px) translateY(-3px) !important; }
+
+
+        .heart.show-heart { /* Base class for visible heart */
+            opacity: 1;
+            transform: translateX(-50%) scale(1.25);
+        }
+        .heart.pulse-gentle { animation: pulseHeartGentle 1.8s infinite alternate ease-in-out; }
+        .heart.pulse-kiss { animation: pulseHeartKiss 0.6s infinite ease-in-out; } /* Faster pulse for kiss */
+        
+        @keyframes pulseHeartGentle {
+            0% { transform: translateX(-50%) scale(1.25); filter: drop-shadow(0 0 10px #ff6b81); }
+            100% { transform: translateX(-50%) scale(1.4); filter: drop-shadow(0 0 18px #ff6b81); }
+        }
+        @keyframes pulseHeartKiss {
+            0% { transform: translateX(-50%) scale(1.3); filter: drop-shadow(0 0 15px #ff4757); } /* Brighter glow */
+            50% { transform: translateX(-50%) scale(1.55); filter: drop-shadow(0 0 25px #ff4757); }
+            100% { transform: translateX(-50%) scale(1.3); filter: drop-shadow(0 0 15px #ff4757); }
+        }
+
+        @keyframes movePerson1 { 0% { transform: translateX(0); } 100% { transform: translateX(125px); } }
+        @keyframes movePerson2 { 0% { transform: translateX(0); } 100% { transform: translateX(-125px); } }
+
+        @keyframes hugPerson1ArmFront { 0% { transform: rotate(20deg); } 100% { transform: rotate(-65deg) translateX(-8px) translateY(8px); } }
+        @keyframes hugPerson1ArmBack { 0% { transform: rotate(-15deg); } 100% { transform: rotate(45deg) translateX(8px) translateY(12px); } }
+        @keyframes hugPerson2ArmFront { 0% { transform: rotate(15deg); } 100% { transform: rotate(75deg) translateX(12px) translateY(5px); } }
+        @keyframes hugPerson2ArmBack { 0% { transform: rotate(-20deg); } 100% { transform: rotate(-55deg) translateX(-12px) translateY(18px); } }
+        
+        .title-text {
+            font-family: 'Parisienne', cursive;
+            font-size: 3.5rem;
+            color: #b93b57; /* Deeper romantic red */
+            margin-bottom: 2rem;
+        }
+
+        .action-button {
+            padding: 14px 32px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background-color 0.25s ease, transform 0.15s ease, box-shadow 0.25s ease, opacity 0.3s ease;
+            margin: 0 10px; /* Adjusted margin for three buttons */
+            border: none;
+            color: white;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.12);
+        }
+        .action-button:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.18);
+        }
+        .action-button:active:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .action-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .hug-button { background-color: #e78fb3; }
+        .hug-button:hover:not(:disabled) { background-color: #de70a1; }
+        
+        .kiss-button { background-color: #ff7f50; } /* Coral for kiss */
+        .kiss-button:hover:not(:disabled) { background-color: #ff6347; } /* Tomato */
+        
+        .reset-button { background-color: #a0aec0; }
+        .reset-button:hover:not(:disabled) { background-color: #718096; }
+        
+        .controls { margin-top: 35px; display: flex; gap: 15px; } /* Adjusted gap */
+    </style>
+</head>
+<body>
+
+    <h1 class="title-text">A Tender Moment</h1>
+
+    <div class="animation-container">
+        <div id="person1" class="person">
+            <div class="head" id="person1Head"></div>
+            <div class="torso"></div>
+            <div class="arm arm-front" id="person1ArmFront"></div>
+            <div class="arm arm-back" id="person1ArmBack"></div>
+        </div>
+        <div id="person2" class="person">
+            <div class="head" id="person2Head"></div>
+            <div class="torso"></div>
+            <div class="arm arm-front" id="person2ArmFront"></div>
+            <div class="arm arm-back" id="person2ArmBack"></div>
+        </div>
+        <div id="heart" class="heart">💖</div>
+        <div id="kissSymbol" class="kiss-symbol">💋</div>
+    </div>
+
+    <div class="controls">
+        <button id="hugButton" class="action-button hug-button">Begin Embrace</button>
+        <button id="kissButton" class="action-button kiss-button" disabled>Share a Kiss</button>
+        <button id="resetButton" class="action-button reset-button">Reset Moment</button>
+    </div>
+
+    <script>
+        const person1 = document.getElementById('person1');
+        const person2 = document.getElementById('person2');
+        const person1Head = document.getElementById('person1Head');
+        const person2Head = document.getElementById('person2Head');
+        const person1ArmFront = document.getElementById('person1ArmFront');
+        const person1ArmBack = document.getElementById('person1ArmBack');
+        const person2ArmFront = document.getElementById('person2ArmFront');
+        const person2ArmBack = document.getElementById('person2ArmBack');
+        const heart = document.getElementById('heart');
+        const kissSymbol = document.getElementById('kissSymbol');
+        const hugButton = document.getElementById('hugButton');
+        const kissButton = document.getElementById('kissButton');
+        const resetButton = document.getElementById('resetButton');
+
+        let hugInProgress = false;
+        let kissInProgress = false;
+
+        function resetAllAnimations() {
+            hugInProgress = false;
+            kissInProgress = false;
+
+            // Clear movement and arm classes
+            person1.classList.remove('move-person1');
+            person2.classList.remove('move-person2');
+            person1ArmFront.classList.remove('hug-person1-arm-front');
+            person1ArmBack.classList.remove('hug-person1-arm-back');
+            person2ArmFront.classList.remove('hug-person2-arm-front');
+            person2ArmBack.classList.remove('hug-person2-arm-back');
+            
+            // Clear head tilt/kiss classes
+            person1Head.classList.remove('tilt-head1-hug', 'kiss-head1');
+            person2Head.classList.remove('tilt-head2-hug', 'kiss-head2');
+            
+            // Clear heart classes
+            heart.classList.remove('show-heart', 'pulse-gentle', 'pulse-kiss');
+            kissSymbol.classList.remove('show');
+            
+            // Force reflow
+            void person1.offsetWidth;
+            void person1Head.offsetWidth;
+            void heart.offsetWidth;
+            void kissSymbol.offsetWidth;
+
+            hugButton.disabled = false;
+            kissButton.disabled = true; // Kiss button disabled until hug is complete
+            resetButton.disabled = false;
+        }
+
+        hugButton.addEventListener('click', () => {
+            if (hugInProgress || kissInProgress) return;
+            hugInProgress = true;
+            
+            resetAllAnimations(); // Reset to a clean state before starting hug
+
+            // Re-disable buttons as resetAllAnimations enables them
+            hugButton.disabled = true;
+            kissButton.disabled = true;
+            resetButton.disabled = true; // Disable reset during main animation sequence
+            hugInProgress = true; // Set again
+
+            person1.classList.add('move-person1');
+            person2.classList.add('move-person2');
+
+            // Movement animation is 2.5s.
+            setTimeout(() => {
+                person1ArmFront.classList.add('hug-person1-arm-front');
+                person1ArmBack.classList.add('hug-person1-arm-back');
+                person2ArmFront.classList.add('hug-person2-arm-front');
+                person2ArmBack.classList.add('hug-person2-arm-back');
+
+                person1Head.classList.add('tilt-head1-hug');
+                person2Head.classList.add('tilt-head2-hug');
+                
+                // Arm animation is 1.2s. Heart appears after arms start.
+                setTimeout(() => {
+                    heart.classList.add('show-heart');
+                    heart.classList.add('pulse-gentle');
+                    
+                    // Enable Kiss and Reset buttons after hug sequence is fully complete
+                    setTimeout(() => {
+                        hugInProgress = false; // Hug sequence finished
+                        kissButton.disabled = false; // Enable kiss
+                        resetButton.disabled = false; // Enable reset
+                        // hugButton remains disabled as they are already hugging.
+                    }, 1000); // Allow heart to show and pulse a bit
+                }, 900); // Start heart during arm animation
+
+            }, 2500); // After movement
+        });
+
+        kissButton.addEventListener('click', () => {
+            if (kissInProgress || hugInProgress) return; // Don't kiss if hug isn't complete or another kiss is happening
+            kissInProgress = true;
+            kissButton.disabled = true; // Disable during kiss animation
+            resetButton.disabled = true; // Disable reset during kiss
+
+            // Apply kiss head tilts
+            person1Head.classList.remove('tilt-head1-hug'); // Remove gentle hug tilt first
+            person2Head.classList.remove('tilt-head2-hug');
+            person1Head.classList.add('kiss-head1');
+            person2Head.classList.add('kiss-head2');
+
+            // Show kiss symbol
+            kissSymbol.classList.add('show');
+
+            // Intensify heart pulse
+            heart.classList.remove('pulse-gentle');
+            heart.classList.add('pulse-kiss');
+
+            // Duration of the kiss
+            setTimeout(() => {
+                // Return to hugging pose
+                person1Head.classList.remove('kiss-head1');
+                person2Head.classList.remove('kiss-head2');
+                person1Head.classList.add('tilt-head1-hug'); // Reapply gentle hug tilt
+                person2Head.classList.add('tilt-head2-hug');
+
+                kissSymbol.classList.remove('show');
+
+                heart.classList.remove('pulse-kiss');
+                heart.classList.add('pulse-gentle');
+                
+                kissInProgress = false;
+                kissButton.disabled = false; // Re-enable for another kiss
+                resetButton.disabled = false;
+            }, 1500); // Kiss duration 1.5 seconds
+        });
+
+        resetButton.addEventListener('click', resetAllAnimations);
+
+        // Initial setup
+        resetAllAnimations(); // Call on load to set initial button states correctly
+    </script>
+
+</body>
+</html>
